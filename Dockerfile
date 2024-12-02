@@ -9,9 +9,11 @@ ARG GID=1000
 RUN groupadd -g "${GID}" python \
   && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" python
 WORKDIR /home/python
-
+RUN git clone https://github.com/Leewonyooung/fastapi.git
+WORKDIR /app/fastapi
 COPY --chown=python:python requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
+
 
 # USER 변경은 반드시 pip 패키지 설치 스크립트 이후에 작성되어야 함
 USER python:python
@@ -20,8 +22,8 @@ COPY --chown=python:python . .
 
 ARG FLASK_ENV
 
-ENV FLASK_ENV=${FLASK_ENV}
+# ENV FLASK_ENV=${FLASK_ENV}
 
-EXPOSE 5000
+EXPOSE 8000
 
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
